@@ -22,17 +22,13 @@ if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
     endif ()
 endif ()
 
-)
-
 add_library(cudasift ${LIBRARY_TYPE}
     src/cudaImage.cu
     src/cudaSiftH.cu
     src/cudaSiftD.cu
     src/matching.cu
-    src/geomFuncs.cpp)
-
-
-
+    src/geomFuncs.cpp
+)
 
 target_sources(cudasift
     PUBLIC
