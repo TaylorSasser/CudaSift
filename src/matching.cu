@@ -1,5 +1,5 @@
-#include "cudaSift.h"
-#include "cudautils.h"
+#include <cudasift/cudaSift.h>
+#include <cudasift/cudautils.h>
 
 //================= Device matching functions =====================//
 
@@ -1207,4 +1207,3 @@ double MatchSiftData(SiftData &data1, SiftData &data2)
 #endif
   return gpuTime;
 }		 
-  

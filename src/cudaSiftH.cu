@@ -7,13 +7,11 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-#include <cudasift/cudautils.h>
 
-#include "cudaImage.h"
-#include "cudaSift.h"
-#include "cudaSiftD.h"
-#include "cudaSiftH.h"
-#include "cudaSiftD.cu"
+#include <cudasift/cudaSift.h>
+#include <cudasift/cudautils.h>
+#include <cudasift/cudaSiftD.h>
+
 
 void InitCuda(int devNum)
 {
@@ -51,7 +49,7 @@ float *AllocSiftTempMemory(int width, int height, int numOctaves, bool scaleUp)
     size += h*p;
     sizeTmp += nd*h*p; 
   }
-  float *memoryTmp = NULL; 
+  float *memoryTmp = NULL;
   size_t pitch;
   size += sizeTmp;
   safeCall(cudaMallocPitch((void **)&memoryTmp, &pitch, (size_t)4096, (size+4095)/4096*sizeof(float)));

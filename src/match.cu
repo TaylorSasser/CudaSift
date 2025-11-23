@@ -18,7 +18,8 @@
 #include <memory>
 #include <algorithm>
 #include <immintrin.h>
-#include "cudautils.h"
+
+#include <cudasift/cudaSift.h>
 
 #define RUNCPU 1
 #define CHECK  1

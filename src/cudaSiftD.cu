@@ -2,19 +2,13 @@
 // CUDA SIFT extractor by Marten Bjorkman aka Celebrandil //
 //********************************************************//  
 
-#include "cudautils.h"
-#include "cudaSiftD.h"
-#include "cudaSift.h"
+#include <cudasift/cudautils.h>
+#include <cudasift/cudaSiftD.h>
+#include <cudasift/cudaSift.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Kernel configuration
 ///////////////////////////////////////////////////////////////////////////////
-
-__constant__ int d_MaxNumPoints;
-__device__ unsigned int d_PointCounter[8*2+1];
-__constant__ float d_ScaleDownKernel[5]; 
-__constant__ float d_LowPassKernel[2*LOWPASS_R+1]; 
-__constant__ float d_LaplaceKernel[8*12*16]; 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Lowpass filter and subsample image
@@ -2035,4 +2029,3 @@ __global__ void LowPassBlock(float *d_Image, float *d_Result, int width, int pit
 		     k[1]*(xrows[(ly - 3)%N][tx] + xrows[(ly + 3)%N][tx]) +
 		     k[0]*(xrows[(ly - 4)%N][tx] + xrows[(ly + 4)%N][tx]);
 }
-

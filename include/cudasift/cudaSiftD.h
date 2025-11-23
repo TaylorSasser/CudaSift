@@ -41,6 +41,17 @@
 #define LOWPASS_H      32 //16
 #define LOWPASS_R       4
 
+
+extern __constant__ int d_MaxNumPoints;
+extern __device__ unsigned int d_PointCounter[8*2+1];
+extern __constant__ float d_ScaleDownKernel[5];
+extern __constant__ float d_LowPassKernel[2*LOWPASS_R+1];
+extern __constant__ float d_LaplaceKernel[8*12*16];
+
+__global__ void ScaleDown(float *d_Result, float *d_Data, int width, int pitch, int height, int newpitch);
+__global__ void ScaleUp(float *d_Result, float *d_Data, int width, int pitch, int height, int newpitch)
+
+
 //====================== Number of threads ====================//
 // ScaleDown:               SCALEDOWN_W + 4
 // LaplaceMulti:            (LAPLACE_W+2*LAPLACE_R)*LAPLACE_S
