@@ -1,7 +1,6 @@
 #ifndef CUDASIFTH_H
 #define CUDASIFTH_H
 
-#include "cudautils.h"
 #include "cudaImage.h"
 
 //********************************************************//

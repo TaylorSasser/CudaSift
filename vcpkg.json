@@ -1,0 +1,14 @@
+{
+  "name": "cudasift",
+  "version": "2.0",
+  "dependencies": [
+    "cuda",
+    {
+      "name": "opencv",
+      "version>=": "4.11.0",
+      "features": [
+        "cuda"
+      ]
+    }
+  ]
+}

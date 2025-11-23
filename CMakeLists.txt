@@ -1,78 +1,135 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.23)
 
-project(cudaSift)
-set(cudaSift_VERSION_MAJOR 2)
-set(cudaSift_VERSION_MINOR 0)
-set(cudaSift_VERSION_PATCH 0)
-
-set(CPACK_PACKAGE_VERSION_MAJOR "${cudaSift_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${cudaSift_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${cudaSift_VERSION_PATCH}")
-set(CPACK_GENERATOR "ZIP")
-include(CPack)
-
-find_package(OpenCV REQUIRED)
-find_package(CUDA)
-if (NOT CUDA_FOUND)
-  message(STATUS "CUDA not found. Project will not be built.")
-endif(NOT CUDA_FOUND)
-
-if (WIN32)
-  set(EXTRA_CXX_FLAGS "/DVERBOSE /D_CRT_SECURE_NO_WARNINGS ")
-  list(APPEND CUDA_NVCC_FLAGS "-arch=sm_35;--compiler-options;-O2;-DVERBOSE") 
-endif()
-if (UNIX)
-  if (APPLE)
-    set(EXTRA_CXX_FLAGS "-DVERBOSE -msse2")
-    list(APPEND CUDA_NVCC_FLAGS "-arch=sm_35;--compiler-options;-O2;-DVERBOSE") 
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -msse2 ")
-    list(APPEND CUDA_NVCC_FLAGS "-lineinfo;-ccbin;/usr/bin/gcc-6;--compiler-options;-O2;-D_FORCE_INLINES;-DVERBOSE_NOT") 
-  endif()
-endif()
-
-set(cuda_sources
-  cudaImage.cu  
-  cudaImage.h  
-  cudaSiftH.cu 
-  cudaSiftH.h  
-  matching.cu  
-  cudaSiftD.h  
-  cudaSift.h  
-  cudautils.h
-)  
-
-set(sources
-  geomFuncs.cpp  
-  mainSift.cpp  
+project(cudaSift
+        VERSION 2.0.0
+        LANGUAGES CXX CUDA
 )
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR} 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+
+set(LIBRARY_TYPE STATIC)
+if (BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE SHARED)
+endif ()
+
+if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    if (DEFINED CUDA_ARCHS)
+        set(CMAKE_CUDA_ARCHITECTURES "${CUDA_ARCHS}")
+    else ()
+        set(CMAKE_CUDA_ARCHITECTURES "61;75;86")
+    endif ()
+endif ()
+
 )
 
-#SET(CUDA_SEPARABLE_COMPILATION ON)
+add_library(cudasift ${LIBRARY_TYPE}
+    src/cudaImage.cu
+    src/cudaSiftH.cu
+    src/cudaSiftD.cu
+    src/matching.cu
+    src/geomFuncs.cpp)
 
-cuda_add_executable(cudasift ${cuda_sources} ${sources} OPTIONS -arch=sm_35)
 
-#cuda_add_executable(l2net l2netD.cu OPTIONS -arch=sm_35)
 
-set_target_properties(cudasift PROPERTIES
-  COMPILE_FLAGS "${EXTRA_CXX_FLAGS}"			   
+
+target_sources(cudasift
+    PUBLIC
+    FILE_SET public_headers
+    TYPE HEADERS
+    BASE_DIRS include/
+    FILES
+        include/cudasift/cudaImage.h
+        include/cudasift/cudaSift.h
+        include/cudasift/cudaSiftD.h
+        include/cudasift/cudaSiftH.h
+        include/cudasift/cudautils.h
 )
 
-target_link_libraries(cudasift ${CUDA_cudadevrt_LIBRARY} ${OpenCV_LIBS})
-#  /usr/local/cuda/lib64/libcudadevrt.a ${OpenCV_LIBS} 
-#)
- 
-install(FILES 
-  ${cuda_sources} 
-  ${sources}
-  cudaSiftD.cu
-  CMakeLists.txt
-  Copyright.txt
-  DESTINATION .
+
+target_include_directories(cudasift
+    PUBLIC
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
+    ${CUDAToolkit_INCLUDE_DIRS}
 )
-install(FILES data/left.pgm data/righ.pgm
-  DESTINATION data
+
+target_include_directories(cudasift
+    PUBLIC
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
+        ${CUDAToolkit_INCLUDE_DIRS}
+)
+
+target_compile_features(cudasift PRIVATE cxx_std_17)
+
+set_property(TARGET cudasift
+        PROPERTY CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
+
+find_package(CUDAToolkit REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
+
+target_link_libraries(cudasift
+    PUBLIC
+    CUDA::cudart
+    ${OpenCV_LIBS}
+)
+target_compile_definitions(cudasift
+    PRIVATE
+    VERBOSE
+    _CRT_SECURE_NO_WARNINGS
+)
+
+target_compile_options(cudasift
+    PRIVATE
+    -O3
+    -msse2
+    $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo -Wno-deprecated-gpu-targets>
+)
+
+set_target_properties(cudasift
+    PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    EXPORT_NAME cudaSift
+)
+
+install(
+    TARGETS cudasift
+    EXPORT cudasift_targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FILE_SET public_headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/cudasift")
+
+install(EXPORT cudasift_targets
+        FILE cudasift_targets.cmake
+        NAMESPACE cudasift::
+        DESTINATION "${INSTALL_CONFIGDIR}"
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/cudasift_config_version.cmake.in
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config_version.cmake
+    DESTINATION "${INSTALL_CONFIGDIR}"
+)
+
+install(FILES
+        Copyright.txt
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/cudasift"
+)
+
+install(FILES
+        data/left.pgm
+        data/righ.pgm
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/cudasift/data"
 )

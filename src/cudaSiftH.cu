@@ -7,13 +7,12 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-#include "cudautils.h"
+#include <cudasift/cudautils.h>
 
 #include "cudaImage.h"
 #include "cudaSift.h"
 #include "cudaSiftD.h"
 #include "cudaSiftH.h"
-
 #include "cudaSiftD.cu"
 
 void InitCuda(int devNum)
@@ -512,4 +511,3 @@ double FindPointsMulti(CudaImage *sources, SiftData &siftData, float thresh, flo
   checkMsg("FindPointsMulti() execution failed\n");
   return 0.0;
 }
-
