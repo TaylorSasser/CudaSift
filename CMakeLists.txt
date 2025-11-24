@@ -90,42 +90,40 @@ set_target_properties(cudasift
     EXPORT_NAME cudaSift
 )
 
-install(
-    TARGETS cudasift
-    EXPORT cudasift_targets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    FILE_SET public_headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+include(GNUInstallDirs)
+
+install(TARGETS cudasift
+        EXPORT cudasift_targets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        FILE_SET public_headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/cudasift")
 
-install(EXPORT cudasift_targets
-        FILE cudasift_targets.cmake
+install(
+        EXPORT cudasift_targets
         NAMESPACE cudasift::
-        DESTINATION "${INSTALL_CONFIGDIR}"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cudasift
+)
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+        ${PROJECT_SOURCE_DIR}/cmake/cudasift_config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cudasift
 )
 
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/cudasift_config_version.cmake.in
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
+        ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config_version.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
 )
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config_version.cmake
-    DESTINATION "${INSTALL_CONFIGDIR}"
-)
 
 install(FILES
-        Copyright.txt
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/cudasift"
-)
-
-install(FILES
-        data/left.pgm
-        data/righ.pgm
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/cudasift/data"
+        ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/cudasift_config_version.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cudasift
 )

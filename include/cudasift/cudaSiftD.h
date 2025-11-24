@@ -4,6 +4,7 @@
 
 #ifndef CUDASIFTD_H
 #define CUDASIFTD_H
+#include <cudasift/cudaSift.h>
 
 #define NUM_SCALES      5
 
@@ -24,7 +25,7 @@
 
 // Find point thread block height
 #define MINMAX_H        8 //16 
- 
+
 // Laplace thread block width
 #define LAPLACE_W     128 // 56
 
@@ -43,14 +44,26 @@
 
 
 extern __constant__ int d_MaxNumPoints;
-extern __device__ unsigned int d_PointCounter[8*2+1];
+extern __device__ unsigned int d_PointCounter[8 * 2 + 1];
 extern __constant__ float d_ScaleDownKernel[5];
-extern __constant__ float d_LowPassKernel[2*LOWPASS_R+1];
-extern __constant__ float d_LaplaceKernel[8*12*16];
+extern __constant__ float d_LowPassKernel[2 * LOWPASS_R + 1];
+extern __constant__ float d_LaplaceKernel[8 * 12 * 16];
 
-__global__ void ScaleDown(float *d_Result, float *d_Data, int width, int pitch, int height, int newpitch);
-__global__ void ScaleUp(float *d_Result, float *d_Data, int width, int pitch, int height, int newpitch)
+__global__ void ScaleDown(float* d_Result, float* d_Data, int width, int pitch, int height, int newpitch);
+__global__ void ScaleUp(float* d_Result, float* d_Data, int width, int pitch, int height, int newpitch);
+__global__ void LowPassBlock(float* d_Image, float* d_Result, int width, int pitch, int height);
+__global__ void RescalePositions(SiftPoint* d_sift, int numPts, float scale);
+__global__ void ComputeOrientations(cudaTextureObject_t texObj, SiftPoint* d_Sift, int fstPts);
 
+__global__ void ExtractSiftDescriptorsCONSTNew(cudaTextureObject_t texObj, SiftPoint* d_sift, float subsampling,
+                                               int octave);
+__global__ void OrientAndExtractCONST(cudaTextureObject_t texObj, SiftPoint* d_Sift, float subsampling, int octave);
+__global__ void FindPointsMultiNew(float* d_Data0, SiftPoint* d_Sift, int width, int pitch, int height,
+                                   float subsampling, float lowestScale, float thresh, float factor, float edgeLimit,
+                                   int octave);
+
+__global__ void LaplaceMultiMem(float* d_Image, float* d_Result, int width, int pitch, int height, int octave);
+__global__ void ComputeOrientationsCONST(cudaTextureObject_t texObj, SiftPoint *d_Sift, int octave);
 
 //====================== Number of threads ====================//
 // ScaleDown:               SCALEDOWN_W + 4

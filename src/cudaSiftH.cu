@@ -11,6 +11,7 @@
 #include <cudasift/cudaSift.h>
 #include <cudasift/cudautils.h>
 #include <cudasift/cudaSiftD.h>
+#include <cudasift/cudaSiftH.h>
 
 
 void InitCuda(int devNum)
