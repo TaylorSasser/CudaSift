@@ -5,7 +5,7 @@
       "name": "debug",
       "inherits": "debug-base",
       "environment": {
-        "VCPKG_ROOT": "/home/Taylor/.local/vcpkg/",
+        "VCPKG_ROOT": "/home/Taylor/.vcpkg/",
         "CUDACXX": "/usr/local/cuda-12.8/"
       },
       "cacheVariables": {
@@ -17,7 +17,7 @@
       "name": "release",
       "inherits": "release-base",
       "environment": {
-        "VCPKG_ROOT": "/home/Taylor/.local/vcpkg/"
+        "VCPKG_ROOT": "/home/Taylor/.vcpkg/"
       },
       "cacheVariables": {
         "CMAKE_CUDA_COMPILER": "/usr/local/cuda-12.8/bin/nvcc",
