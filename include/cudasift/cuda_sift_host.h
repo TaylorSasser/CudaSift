@@ -3,8 +3,8 @@
 
 
 #include <cuda_runtime_api.h>
-#include <cudasift/cudaImage.h>
-#include <cudasift/cudaSift.h>
+#include <cudasift/cuda_image.h>
+#include <cudasift/cuda_sift.h>
 
 //********************************************************//
 // CUDA SIFT extractor by Marten Bjorkman aka Celebrandil //

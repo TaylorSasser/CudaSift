@@ -8,10 +8,10 @@
 #include <iostream>
 #include <algorithm>
 
-#include <cudasift/cudaSift.h>
-#include <cudasift/cudautils.h>
-#include <cudasift/cudaSiftD.h>
-#include <cudasift/cudaSiftH.h>
+#include <cudasift/cuda_sift.h>
+#include <cudasift/cuda_utils.h>
+#include <cudasift/cuda_sift_device.h>
+#include <cudasift/cuda_sift_host.h>
 
 
 void InitCuda(int devNum)
