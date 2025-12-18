@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <immintrin.h>
 
-#include <cudasift/cudaSift.h>
+#include <cudasift/cuda_sift.h>
 
 #define RUNCPU 1
 #define CHECK  1
