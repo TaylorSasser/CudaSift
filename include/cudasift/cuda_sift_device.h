@@ -4,7 +4,7 @@
 
 #ifndef CUDASIFTD_H
 #define CUDASIFTD_H
-#include <cudasift/cudaSift.h>
+#include <cudasift/cuda_sift.h>
 
 #define NUM_SCALES      5
 
