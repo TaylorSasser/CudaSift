@@ -1,5 +1,5 @@
-#include <cudasift/cudaSift.h>
-#include <cudasift/cudautils.h>
+#include <cudasift/cuda_shift.h>
+#include <cudasift/cuda_utils.h>
 
 //================= Device matching functions =====================//
 
